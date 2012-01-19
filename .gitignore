@@ -1,1 +1,5 @@
 .DS_Store
+ShouldIGo/log
+ShouldIGo/.bundle
+ShouldIGo/db/schema.rb
+ShouldIGo/bundler_files
