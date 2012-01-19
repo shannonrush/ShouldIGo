@@ -1,7 +1,12 @@
 # Elements
 
-elements = ["TMAX","TMIN","PRCP","ACSC","AWND"]
-elements.each {|e| Element.find_or_create_by_code e}
+Element.delete_all
+elements = [{:code => "TMAX", :units => "tenths of degrees C"},
+            {:code => "TMIN", :units => "tenths of degrees C"},
+            {:code => "PRCP", :units => "tenths of mm"},
+            {:code => "ACSC", :units => "%"},
+            {:code => "AWND", :units => "tenths of meters per second"}]
+elements.each {|e| Element.create(e)}
 
 # Stations
 
