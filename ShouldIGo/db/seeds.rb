@@ -1,13 +1,3 @@
-# Elements
-
-Element.delete_all
-elements = [{:code => "TMAX", :units => "tenths of degrees C"},
-            {:code => "TMIN", :units => "tenths of degrees C"},
-            {:code => "PRCP", :units => "tenths of mm"},
-            {:code => "ACSC", :units => "%"},
-            {:code => "AWND", :units => "tenths of meters per second"}]
-elements.each {|e| Element.create(e)}
-
 # Stations
 
 Station.delete_all
@@ -18,7 +8,7 @@ open("#{Rails.root}/db/data/ghcnd-stations.txt") do |stations|
   end
 end
 
-# Records
+# Records and Elements
 
 Record.delete_all
 Dir.foreach("#{Rails.root}/db/data/records") do |file|
@@ -28,18 +18,16 @@ Dir.foreach("#{Rails.root}/db/data/records") do |file|
     if station.present?
       open("#{Rails.root}/db/data/records/#{file}") do |records|
         records.read.each_line do |record|
-          element = Element.find_by_code(record[(17..20)])
-          if element.present?
-            year = record[(11..14)]
-            month = record[(15..16)]
-            char = 21
-            day = 1
-            while char < 266 do
-              value = record[(char..char+4)].to_i == -9999 ? nil : record[(char..char+4)].to_i
-              Record.create!(:station_id => station.id, :year => year, :month => month, :day => day, :element_id => element.id, :value => value) 
-              day += 1
-              char += 8
-            end
+          element = Element.find_or_create_by_code(record[(17..20)])
+          year = record[(11..14)]
+          month = record[(15..16)]
+          char = 21
+          day = 1
+          while char < 266 do
+            value = record[(char..char+4)].to_i == -9999 ? nil : record[(char..char+4)].to_i
+            Record.create!(:station_id => station.id, :year => year, :month => month, :day => day, :element_id => element.id, :value => value) 
+            day += 1
+            char += 8
           end
         end
       end
